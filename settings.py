@@ -22,6 +22,7 @@ URL_PREFIX = 'api'
 
 tenants = {
     'item_title': 'tenants',
+    'allowed_roles': ['user','admin'],
     'schema': {
         'tenantid': {
             'type': 'string',
@@ -215,10 +216,7 @@ groups = {
             'type': 'dict',
             'allow_unknown': True,
         },
-        'parents': {
-            'type': 'list',
-        },
-        'ancestors': {
+        'children': {
             'type': 'list',
         },
     }
