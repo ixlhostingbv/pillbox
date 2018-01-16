@@ -22,6 +22,11 @@ URL_PREFIX = 'api'
 
 tenants = {
     'item_title': 'tenants',
+    'pagination': False,
+    'additional_lookup': {
+        'url': 'regex("[\w]+")',
+        'field': 'tenantid'
+    },
     'allowed_roles': ['user','admin'],
     'schema': {
         'tenantid': {
@@ -154,6 +159,7 @@ hosts = {
         'field': 'name'
     },
     'versioning': True,
+    'allowed_roles': ['user','admin'],
     'schema': {
         'name': {
             'type': 'string',
@@ -218,6 +224,14 @@ groups = {
         },
         'children': {
             'type': 'list',
+            'schema': {
+                'type': 'string',
+                'data_relation': {
+                    'resource': 'groups',
+                    'field': 'name',
+                    'embeddable': True
+                }
+            }
         },
     }
 }
