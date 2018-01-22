@@ -1,0 +1,32 @@
+version: '3'
+services:
+    pilbox:
+        build:
+          context: .
+          args:
+            - BRANCH=${VERSION-master}
+          dockerfile: Dockerfile
+        depends_on:
+        - mongo
+        env_file: pillbox.env
+        volumes:
+        - pillbox-nginx-config:/etc/pillbox-nginx/
+    nginx:
+        image: nginx:1.13-alpine
+        command: nginx -g 'daemon off;' -c /etc/pillbox-nginx/nginx.conf
+        depends_on:
+        - pillbox
+        ports:
+        - 8080
+        volumes:
+        - pillbox-nginx-config:/etc/pillbox-nginx/
+    mongo:
+        image: mongo:3.6
+        volumes:
+        - pillbox-mongo-data:/data/db
+
+volumes:
+    pillbox-nginx-config:
+        driver: local
+    pillbox-mongo-data:
+        driver: local

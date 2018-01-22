@@ -13,9 +13,12 @@ RUN pip install gunicorn
 WORKDIR /opt
 
 ARG BRANCH=master
-ARG URL=https://github.com/digitalocean/netbox/archive/$BRANCH.tar.gz
+ARG URL=https://github.com/vvgelder/pillbox/archive/$BRANCH.tar.gz
 RUN wget -q -O - "${URL}" | tar xz \
-  && mv netbox* netbox
+  && mv pillbox* pillbox
 
-WORKDIR /opt/netbox
+WORKDIR /opt/pillbox
 RUN pip install -r requirements.txt
+
+COPY docker/local_settings.py /opt/pillbox/local_settings.py
+COPY docker/gunicorn_config.py /opt/pillbox
