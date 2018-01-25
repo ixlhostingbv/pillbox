@@ -10,8 +10,8 @@ SUPER_USER_TOKEN = os.environ.get('SUPER_USER_TOKEN', 'changemetoken')
 REMOTE_ADDR_HEADER = 'X-Real-IP'
 
 
-RESOURCE_METHODS = ['GET', 'POST', 'DELETE']
-ITEM_METHODS = ['GET', 'PATCH', 'DELETE']
+RESOURCE_METHODS = [ 'GET', 'POST' ]
+ITEM_METHODS = [ 'GET', 'PATCH', 'PUT', 'DELETE' ]
 
 CACHE_CONTROL = 'max-age=20'
 CACHE_EXPIRES = 20
@@ -22,15 +22,25 @@ URL_PREFIX = 'api'
 
 tenants = {
     'item_title': 'tenants',
-    'pagination': False,
     'additional_lookup': {
         'url': 'regex("[\w]+")',
         'field': 'tenantid'
     },
-    'allowed_roles': ['user','admin'],
     'schema': {
         'tenantid': {
             'type': 'string',
+            'required': True,
+            'unique': True,
+        },
+        'role': {
+            'type': 'string',
+	        'allowed': ['admin', 'adminro', 'user', 'userro'],
+            'default': 'viewer'
+        }
+        'name': {
+            'type': 'string',
+            'minlength': 1,
+            'maxlength': 64,
             'required': True,
             'unique': True,
         },
@@ -80,9 +90,6 @@ tenants = {
         'zipcode': {
             'type': 'string',
         },
-        'password': {
-            'type': 'string',
-        },
         'mobilenumber': {
             'type': 'string',
         },
@@ -94,37 +101,11 @@ tenants = {
         },
         'password': {
             'type': 'string',
-        },
-    },
-}
-
-operators = {
-    'item_title': 'operators',
-    'cache_control': '',
-    'cache_expires': 0,
-    'allowed_roles': ['user','admin'],
-    'schema': {
-        'name': {
-            'type': 'string',
-            'minlength': 1,
-            'maxlength': 64,
             'required': True,
-            'unique': True,
-        },
-        'password': {
-            'type': 'string',
-        },
-        'description': {
-            'type': 'string',
         },
         'tokens': {
             'type': 'list',
         },
-        'role': {
-            'type': 'string',
-	        'allowed': ['admin', 'user', 'viewer'],
-            'default': 'viewer'
-        }
     },
 }
 
@@ -286,7 +267,6 @@ kb = {
 
 DOMAIN = {
     'tenants': tenants,
-    'operators': operators,
     'logs': logs,
     'groups': groups,
     'hosts': hosts,

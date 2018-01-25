@@ -23,34 +23,42 @@ handler.setFormatter(logging.Formatter(
 # token based authentication with roles
 class Authenticate(BasicAuth):
     
+    def get_user_role(self):
+                return g.get('roles')
+
+    def set_user_role(self, role:
+        g.role = role
+
     def check_auth(self, username, password, allowed_roles, resource, method):
+
         app.logger.debug('AUTH: resource: {} user: {} pass: {} method: {}'.format(resource,username,password,method))
-        accounts = app.data.driver.db['operators']
+        
+        accounts = app.data.driver.db['tenants']
         lookup = {}
-        lookup['name'] = username
+        lookup['tenantid'] = username
         if allowed_roles:
             lookup['role'] = {'$in': allowed_roles}
         account = accounts.find_one(lookup)
         if account:
-             self.set_request_auth_value(account['name'])
+             self.set_request_auth_value(account['tenantid'])
         return account and bcrypt.hashpw(str(password).encode('utf-8'), str(account['password']).encode('utf-8')) == account['password']
     
     def check_auth_token(self, token, allowed_roles, resource, method):
 
         app.logger.debug('AUTH: resource: {} token: {} method: {}'.format(resource, token, method))
 
-        if resource == 'operators' and app.config['SUPER_USER_TOKEN'] and token == app.config['SUPER_USER_TOKEN']:
+        if resource == 'tenants' and app.config['SUPER_USER_TOKEN'] and token == app.config['SUPER_USER_TOKEN']:
             self.set_request_auth_value('superadmin')
             return True
 
-        accounts = app.data.driver.db['operators']
+        accounts = app.data.driver.db['tenants']
         lookup = {}
         lookup['tokens'] = token
         if allowed_roles:
             lookup['role'] = { '$in': allowed_roles }
         account = accounts.find_one(lookup)
         if account:
-             self.set_request_auth_value(account['name'])
+             self.set_request_auth_value(account['tenantid'])
         return account
 
     def authorized(self, allowed_roles, resource, method):
@@ -95,7 +103,8 @@ def restrict_user_superadmin(request, lookup):
     
     user_id = app.auth.get_request_auth_value()
     if user_id != 'superadmin':
-        lookup["name"] = user_id
+        lookup["tenantid"] = user_id
+    if use
 
 # Create a Flask Config object
 config = config.Config(os.path.dirname(os.path.abspath(__file__)))
@@ -113,17 +122,11 @@ app.logger.addHandler(handler)
 # hooks
 app.on_insert += store_creator
 app.on_replace += store_modifier
-app.on_pre_GET_operators += restrict_user_superadmin
+app.on_pre_GET_tenants += restrict_user_superadmin
 
 app.register_blueprint(swagger)
 
 app.register_blueprint(tools.bp, url_prefix='/tools')
-
-#@app.route('/tenants')
-#def tenants():
-#    ip = request.headers.get(app.config['REMOTE_ADDR_HEADER'], request.remote_addr)
-#    
-#    return render_template('tenants.html', ip=ip)
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000)

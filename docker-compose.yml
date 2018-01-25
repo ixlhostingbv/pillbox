@@ -4,17 +4,6 @@ services:
         image: mongo:3.6
         volumes:
         - pillbox-mongo-data:/data/db
-    pillbox:
-        build:
-          context: .
-          dockerfile: Dockerfile
-        links:
-                - mongo
-        depends_on:
-                - mongo
-        env_file: pillbox.env
-        volumes:
-        - pillbox-static-files:/opt/pillbox/static
     nginx:
         image: nginx:1.13-alpine
         command: ['nginx', '-g', 'daemon off;']
@@ -26,6 +15,17 @@ services:
                 - 8080:8080
         volumes:
         - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
+        - pillbox-static-files:/opt/pillbox/static
+    pillbox:
+        build:
+          context: .
+          dockerfile: Dockerfile
+        links:
+                - mongo
+        depends_on:
+                - mongo
+        env_file: pillbox.env
+        volumes:
         - pillbox-static-files:/opt/pillbox/static
 volumes:
     pillbox-static-files:
