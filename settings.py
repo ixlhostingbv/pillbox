@@ -294,4 +294,4 @@ SWAGGER_INFO = {
     }
 }
 
-SWAGGER_HOST = 'pillbox.example.com'
+SWAGGER_HOST = 'localhost'

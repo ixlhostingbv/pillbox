@@ -24,7 +24,7 @@ services:
                 - mongo
         depends_on:
                 - mongo
-        env_file: pillbox.env
+        env_file: docker/pillbox.env
         volumes:
         - pillbox-static-files:/opt/pillbox/static
 volumes:
