@@ -103,10 +103,10 @@ def restrict_user_superadmin(request, lookup):
     
     user_id = app.auth.get_request_auth_value()
     role = ap.auth.get_user_role()
+    #elif role != 'admin':
+    #    lookup['role'] = {'$in': role}
     if user_id != 'superadmin':
         lookup["tenantid"] = user_id
-    else role == 'admin':
-        lookup['role'] = {'$in': role}
 
 # Create a Flask Config object
 config = config.Config(os.path.dirname(os.path.abspath(__file__)))
