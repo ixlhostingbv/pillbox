@@ -26,7 +26,7 @@ class Authenticate(BasicAuth):
     def get_user_role(self):
                 return g.get('roles')
 
-    def set_user_role(self, role:
+    def set_user_role(self, role):
         g.role = role
 
     def check_auth(self, username, password, allowed_roles, resource, method):
