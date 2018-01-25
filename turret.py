@@ -4,7 +4,7 @@ import bcrypt
 from eve import Eve
 from eve.auth import BasicAuth
 from flask import current_app as app
-from flask import config, request, render_template
+from flask import config, request, render_template, g
 from eve_swagger import swagger, add_documentation
 import tools
 import logging
