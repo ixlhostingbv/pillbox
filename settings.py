@@ -36,7 +36,7 @@ tenants = {
             'type': 'string',
 	        'allowed': ['admin', 'adminro', 'user', 'userro'],
             'default': 'viewer'
-        }
+        },
         'name': {
             'type': 'string',
             'minlength': 1,
