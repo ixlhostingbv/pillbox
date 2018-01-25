@@ -10,7 +10,11 @@ docker run -d --name nginx --link -p8080:8080 api nginx
 
 # Docker compose
 
-docker-compose up
+docker-compose rm -f
+docker-compose build --pull --no-cache
+docker-compose up -d
+# Run some tests
+docker-compose stop -t 1
 
 enter running container
 
