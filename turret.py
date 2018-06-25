@@ -2,7 +2,7 @@
 import os, sys
 import bcrypt
 from eve import Eve
-from eve.auth import BasicAuth
+from eve_auth_jwt import JWTAuth
 from flask import current_app as app
 from flask import config, request, render_template, g
 from eve_swagger import swagger, add_documentation
@@ -19,66 +19,6 @@ handler.setFormatter(logging.Formatter(
     '%(asctime)s %(levelname)s: %(message)s '
     '[in %(filename)s:%(lineno)d] -- ip: %(clientip)s, '
     'url: %(url)s, method:%(method)s'))
-
-# token based authentication with roles
-class Authenticate(BasicAuth):
-    
-    def get_user_role(self):
-                return g.get('roles')
-
-    def set_user_role(self, role):
-        g.role = role
-
-    def check_auth(self, username, password, allowed_roles, resource, method):
-
-        app.logger.debug('AUTH: resource: {} user: {} pass: {} method: {}'.format(resource,username,password,method))
-        
-        accounts = app.data.driver.db['tenants']
-        lookup = {}
-        lookup['tenantid'] = username
-        if allowed_roles:
-            lookup['role'] = {'$in': allowed_roles}
-        account = accounts.find_one(lookup)
-        if account:
-             self.set_request_auth_value(account['tenantid'])
-        return account and bcrypt.hashpw(str(password).encode('utf-8'), str(account['password']).encode('utf-8')) == account['password']
-    
-    def check_auth_token(self, token, allowed_roles, resource, method):
-
-        app.logger.debug('AUTH: resource: {} token: {} method: {}'.format(resource, token, method))
-
-        if resource == 'tenants' and app.config['SUPER_USER_TOKEN'] and token == app.config['SUPER_USER_TOKEN']:
-            self.set_request_auth_value('superadmin')
-            return True
-
-        accounts = app.data.driver.db['tenants']
-        lookup = {}
-        lookup['tokens'] = token
-        if allowed_roles:
-            lookup['role'] = { '$in': allowed_roles }
-        account = accounts.find_one(lookup)
-        if account:
-             self.set_request_auth_value(account['tenantid'])
-        return account
-
-    def authorized(self, allowed_roles, resource, method):
-        """ Validates the the current request is allowed to pass through. """
-        auth = request.authorization
-        token = None
-
-        if not auth and request.headers.get('Authorization'):
-            token = request.headers.get('Authorization').strip()
-            if token.lower().startswith(('token', 'bearer')):
-                token = token.split(' ')[1]
-
-        if auth:
-            self.set_user_or_token(auth)
-            return auth and self.check_auth(auth.username, auth.password, allowed_roles, resource, method)
-
-        if token:
-            self.set_user_or_token(token)
-            return token and self.check_auth_token(token, allowed_roles, resource, method)
-
 
 # hook functions
 
@@ -115,7 +55,7 @@ config.from_pyfile('settings.py')
 # Load your local_settings.py config file
 config.from_pyfile('local_settings.py')
 
-app = Eve(settings=config, auth=Authenticate, template_folder=tmpl_dir)
+app = Eve(settings=config, auth=JWTAuth, template_folder=tmpl_dir)
 
 # set log level and add handler
 app.logger.setLevel(logging.INFO)

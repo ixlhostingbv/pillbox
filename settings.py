@@ -34,7 +34,7 @@ tenants = {
         },
         'role': {
             'type': 'string',
-	        'allowed': ['admin', 'adminro', 'user', 'userro'],
+	        'allowed': ['customer','admin', 'adminro', 'user', 'userro'],
             'default': 'viewer'
         },
         'name': {
@@ -47,9 +47,6 @@ tenants = {
         'companyname': {
             'type': 'string',
         },
-        'companynumber': {
-            'type': 'string',
-        },
         'description': {
             'type': 'string',
         },
@@ -58,9 +55,6 @@ tenants = {
             'required': True,
         },
         'secondemailaddress': {
-            'type': 'string',
-        },
-        'identifier': {
             'type': 'string',
         },
         'sex': {
@@ -94,9 +88,6 @@ tenants = {
             'type': 'string',
         },
         'phonenumber': {
-            'type': 'string',
-        },
-        'legalform': {
             'type': 'string',
         },
         'password': {

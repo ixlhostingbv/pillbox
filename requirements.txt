@@ -3,3 +3,4 @@ flask-swagger-ui
 Eve-Swagger
 gunicorn
 bcrypt
+eve-auth-jwt
